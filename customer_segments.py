@@ -19,7 +19,7 @@
 # 
 # Run the code block below to load the wholesale customers dataset, along with a few of the necessary Python libraries required for this project. You will know the dataset loaded successfully if the size of the dataset is reported.
 
-# In[5]:
+# In[2]:
 
 # Import libraries necessary for this project
 import numpy as np
@@ -44,7 +44,7 @@ except:
 # 
 # Run the code block below to observe a statistical description of the dataset. Note that the dataset is composed of six important product categories: **'Fresh'**, **'Milk'**, **'Grocery'**, **'Frozen'**, **'Detergents_Paper'**, and **'Delicatessen'**. Consider what each category represents in terms of products you could purchase.
 
-# In[6]:
+# In[3]:
 
 # Display a description of the dataset
 display(data.describe())
@@ -53,7 +53,7 @@ display(data.describe())
 # ### Implementation: Selecting Samples
 # To get a better understanding of the customers and how their data will transform through the analysis, it would be best to select a few sample data points and explore them in more detail. In the code block below, add **three** indices of your choice to the `indices` list which will represent the customers to track. It is suggested to try different sets of samples until you obtain customers that vary significantly from one another.
 
-# In[7]:
+# In[4]:
 
 # TODO: Select three indices of your choice you wish to sample from the dataset
 indices = [60,110,160]
@@ -99,7 +99,7 @@ sns.heatmap(percentiles, vmin=1, vmax=99, annot=True)
 #  - Import a decision tree regressor, set a `random_state`, and fit the learner to the training data.
 #  - Report the prediction score of the testing set using the regressor's `score` function.
 
-# In[8]:
+# In[5]:
 
 from sklearn.cross_validation import train_test_split
 from sklearn import tree
@@ -140,7 +140,7 @@ print("Score Is ", score)
 # ### Visualize Feature Distributions
 # To get a better understanding of the dataset, we can construct a scatter matrix of each of the six product features present in the data. If you found that the feature you attempted to predict above is relevant for identifying a specific customer, then the scatter matrix below may not show any correlation between that feature and the others. Conversely, if you believe that feature is not relevant for identifying a specific customer, the scatter matrix might show a correlation between that feature and another feature in the data. Run the code block below to produce a scatter matrix.
 
-# In[9]:
+# In[6]:
 
 # Produce a scatter matrix for each pair of features in the data
 pd.scatter_matrix(data, alpha = 0.3, figsize = (14,8), diagonal = 'kde');
@@ -164,7 +164,7 @@ pd.scatter_matrix(data, alpha = 0.3, figsize = (14,8), diagonal = 'kde');
 #  - Assign a copy of the data to `log_data` after applying a logarithm scaling. Use the `np.log` function for this.
 #  - Assign a copy of the sample data to `log_samples` after applying a logrithm scaling. Again, use `np.log`.
 
-# In[10]:
+# In[7]:
 
 # TODO: Scale the data using the natural logarithm
 log_data = np.log(data)
@@ -181,7 +181,7 @@ pd.scatter_matrix(log_data, alpha = 0.3, figsize = (14,8), diagonal = 'kde');
 # 
 # Run the code below to see how the sample data has changed after having the natural logarithm applied to it.
 
-# In[11]:
+# In[8]:
 
 # Display the log-transformed sample data
 display(log_samples)
@@ -199,7 +199,7 @@ display(log_samples)
 # **NOTE:** If you choose to remove any outliers, ensure that the sample data does not contain any of these points!  
 # Once you have performed this implementation, the dataset will be stored in the variable `good_data`.
 
-# In[12]:
+# In[9]:
 
 all_outliers = np.array([], dtype='int64')
 
@@ -249,7 +249,7 @@ good_data = log_data.drop(log_data.index[outliers]).reset_index(drop = True)
 #  - Import `sklearn.decomposition.PCA` and assign the results of fitting PCA in six dimensions with `good_data` to `pca`.
 #  - Apply a PCA transformation of the sample log-data `log_samples` using `pca.transform`, and assign the results to `pca_samples`.
 
-# In[13]:
+# In[10]:
 
 from sklearn.decomposition import PCA
 # TODO: Apply PCA to the good data with the same number of dimensions as features
@@ -280,7 +280,7 @@ print pca_results['Explained Variance'].cumsum()
 # ### Observation
 # Run the code below to see how the log-transformed sample data has changed after having a PCA transformation applied to it in six dimensions. Observe the numerical value for the first four dimensions of the sample points. Consider if this is consistent with your initial interpretation of the sample points.
 
-# In[14]:
+# In[11]:
 
 # Display sample log-data after having a PCA transformation applied
 display(pd.DataFrame(np.round(pca_samples, 4), columns = pca_results.index.values))
@@ -294,7 +294,7 @@ display(pd.DataFrame(np.round(pca_samples, 4), columns = pca_results.index.value
 #  - Apply a PCA transformation of `good_data` using `pca.transform`, and assign the reuslts to `reduced_data`.
 #  - Apply a PCA transformation of the sample log-data `log_samples` using `pca.transform`, and assign the results to `pca_samples`.
 
-# In[15]:
+# In[12]:
 
 # TODO: Fit PCA to the good data using only two dimensions
 pca = PCA(n_components=2).fit(good_data)
@@ -312,7 +312,7 @@ reduced_data = pd.DataFrame(reduced_data, columns = ['Dimension 1', 'Dimension 2
 # ### Observation
 # Run the code below to see how the log-transformed sample data has changed after having a PCA transformation applied to it using only two dimensions. Observe how the values for the first two dimensions remains unchanged when compared to a PCA transformation in six dimensions.
 
-# In[16]:
+# In[13]:
 
 # Display sample log-data after applying PCA transformation in two dimensions
 display(pd.DataFrame(np.round(pca_samples, 4), columns = ['Dimension 1', 'Dimension 2']))
@@ -337,8 +337,9 @@ display(pd.DataFrame(np.round(pca_samples, 4), columns = ['Dimension 1', 'Dimens
 # 
 # Cluster assignment:
 # 
-# K-Means << SOFT / HARD >> assignment of points to cluster (assumes symmetrical spherical shapes)
-# GMM << SOFT / HARD >> assignment gives more information such as probabilities (assumes elliptical shape)
+# K-Means SOFT assignment of points to cluster (assumes symmetrical spherical shapes)
+# 
+# GMM HARD assignment gives more information such as probabilities (assumes elliptical shape)
 
 # ### Implementation: Creating Clusters
 # Depending on the problem, the number of clusters that you expect to be in the data may already be known. When the number of clusters is not known *a priori*, there is no guarantee that a given number of clusters best segments the data, since it is unclear what structure exists in the data — if any. However, we can quantify the "goodness" of a clustering by calculating each data point's *silhouette coefficient*. The [silhouette coefficient](http://scikit-learn.org/stable/modules/generated/sklearn.metrics.silhouette_score.html) for a data point measures how similar it is to its assigned cluster from -1 (dissimilar) to 1 (similar). Calculating the *mean* silhouette coefficient provides for a simple scoring method of a given clustering.
@@ -351,22 +352,25 @@ display(pd.DataFrame(np.round(pca_samples, 4), columns = ['Dimension 1', 'Dimens
 #  - Import sklearn.metrics.silhouette_score and calculate the silhouette score of `reduced_data` against `preds`.
 #    - Assign the silhouette score to `score` and print the result.
 
-# In[19]:
+# In[17]:
 
-from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
-reduced_samples = pd.DataFrame(pca_samples, columns = ['Dimension 1', 'Dimension 2'])
+from sklearn.cluster import KMeans
 
-# TODO: Apply your clustering algorithm of choice to the reduced data 
-clusterer = KMeans(n_clusters=2, random_state=29).fit(reduced_data)
-# TODO: Predict the cluster for each data point
-preds = clusterer.predict(reduced_data)
-centers = clusterer.cluster_centers_
-# TODO: Predict the cluster for each transformed sample data point
-sample_preds = clusterer.predict(reduced_samples)
-# TODO: Calculate the mean silhouette coefficient for the number of clusters chosen
-score = silhouette_score(reduced_data, clusterer.labels_, metric='euclidean')
-print("KMeans score", score)
+for i in range(2, 11):
+    clusterer = KMeans(i, random_state=62).fit(reduced_data)
+    # Predict the cluster for each data point
+    preds = clusterer.predict(reduced_data)
+
+    # Find the cluster centers
+    centers = clusterer.cluster_centers_
+
+    # Predict the cluster for each transformed sample data point
+    sample_preds = clusterer.predict(pca_samples)
+
+    # Calculate the mean silhouette coefficient for the number of clusters chosen
+    score = silhouette_score(reduced_data, preds)
+    print i, 'clusters:', score.round(5)
 
 
 # ### Question 7
